@@ -4,12 +4,14 @@
 
 phantom_server is a deploy-ready phantomjs cluster which will help you render
 full HTML pages for your single-page web application.
+
 It performs a similar role as other services like [Pre-Render](https://prerender.io/)
 
 ## Why should you?
 
 If you're using single-page frameworks like AngularJS or EmberJS you must know
 the major pains:
+
 1. SEO - search engines do not render JS so they have to get a full version of
    the page in order to correctly index your site.
 2. Caching - In order to cache full rendred pages in your local cache or CDN
@@ -20,6 +22,7 @@ the major pains:
 ## How phantom_server Resolves These Issues?
 
 By rendering full HTML pages:
+
 1. Search engines will receive a full HTML of your pages and won't have any
    trouble indexing it.
 2. You will have fully rendered HTML pages in your local cache or CDN.
