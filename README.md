@@ -43,11 +43,12 @@ This is the list of things needed to get it going:
 
 An EC2 instance with the following:
   * tags:
-    | Tag Name      | Tag Value   
-    | ------------- | -------------
-    | Project       | phantom_server
-    | Env           | qa      
-    | Roles         | web 
+
+  | Tag Name      | Tag Value   
+  | ------------- | -------------
+  | Project       | phantom_server
+  | Env           | qa      
+  | Roles         | web 
 
   * nginx installed
   * phantomjs installed
