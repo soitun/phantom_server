@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body id="test">
+  <script type="text/javascript">
+    testString = <%= phantom_process_check_phrase.split(" ").map {|s| "\"#{s} \""}.join(" + ") %>;
+    document.getElementById("test").innerHTML=testString;
+    var readyEvent = document.createEvent("Event");
+    readyEvent.initEvent("<%= phantom_ready_event %>", true, true);
+    window.dispatchEvent(readyEvent);
+  </script>
+</body>
+</html>

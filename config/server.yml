@@ -1,0 +1,16 @@
+# Your AWS key
+aws_key_id: 
+# Your AWS Secret
+secret_access_key: 
+# AWS Region e.g. us-west-2
+aws_region: 
+# How to look for your server on ec2:
+# This will look for servers which has the tag Project with the value phantom_server
+ec2_project: phantom_server
+# Git repository to clone from 
+repository: 
+# What user to deploy with
+deploy_user: 
+# Where to deploy - usually /home/deploy_user/project_root
+deploy_to: 
+

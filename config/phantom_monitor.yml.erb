@@ -1,0 +1,27 @@
+defaults: &defaults
+  phantom_termination_grace: 10
+  phantom_processes_number: <%= phantom_num_processes %>
+  phantom_base_port: <%= phantom_base_port %>
+  memory_limit: 150000
+  rails_root: "<%= current_path %>"
+  nginx_conf: "<%= nginx_conf %>"
+  phantom_log_path: "<%= shared_path %>/log/phantomjs.log"
+  memory_retries: 5
+  memory_check_interval: 5
+  processes_check_retries: 3
+  processes_check_interval: 10
+  phantom_command: "phantomjs config/rndrme.js"
+  response_time_threshold: 1
+  response_time_check_retries: 2
+  response_time_check_interval: 120
+  response_time_check_host: '<%= phantom_process_check_host %>'
+  response_time_check_path: '<%= phantom_process_check_url %>'
+  response_check_phrase: <%= phantom_process_check_phrase %>
+
+qa: &qaservers
+  <<: *defaults
+  response_time_check_interval: 60
+
+production:
+  <<: *defaults
+  response_time_check_interval: 60

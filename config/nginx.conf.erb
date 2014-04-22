@@ -1,0 +1,20 @@
+upstream phantomjs { <% (phantom_base_port..(phantom_base_port + phantom_num_processes - 1)).each do |port| %>
+  server 127.0.0.1:<%= port %> fail_timeout=0; <% end %>
+}
+
+server {
+  server_name _;
+  listen 80 default;
+
+  root <%= deploy_to %>/current/public/;
+  
+  try_files $uri.html $uri @render;
+
+  location @render {
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $http_host;
+    proxy_redirect off;
+
+    proxy_pass http://phantomjs;
+  }
+}

@@ -1,0 +1,170 @@
+config = {
+  maxTime: 20000,
+  maxBytes: 0x100000,
+  readyEvent: "<%= phantom_ready_event %>",
+  loadImages: false
+}
+
+var system    = require("system")
+var webserver = require("webserver")
+var webpage   = require("webpage")
+
+var port = system.args[1];
+
+
+var logger = new function() {
+    this.leadZero = function (num) {
+      if (num < 10){
+        return "0"+num;
+      }
+      else{
+        return num;
+      }
+    };
+    this.getFormattedTime = function() {
+      var d = new Date();
+      var day = d.getDate();
+      var month = d.getMonth();
+      var year  = d.getFullYear();
+      month++;
+      var hours = this.leadZero(d.getHours());
+      var mins = this.leadZero(d.getMinutes());
+      var secs = this.leadZero(d.getSeconds());
+
+      return day + "/" + month + "/" + year + " " + hours + ":" + mins + ":" + secs;
+    }
+
+    this.bracket = function(str) {
+        return "[" + str + "]";
+    }
+
+    this.log = function (severity, str) {
+      console.log(this.bracket(this.getFormattedTime()) + this.bracket(severity) + "(" + port + ") " + str);
+    }
+
+    this.info = function(str) {
+        this.log("INFO", str)
+    }
+
+    this.error = function(str) {
+        this.log("ERROR", str)
+    }
+
+    this.debug = function(str) {
+        this.log("DEBUG", str)
+    }
+}
+
+
+
+if (!port) {
+  console.error("No port specified in " + configPath)
+  phantom.exit(1)
+}
+
+var server    = webserver.create()
+var listening = server.listen(port, onRequest)
+
+if (!listening) {
+  console.error("Could not bind to port " + port)
+  phantom.exit(1)
+}
+
+function onRequest(req, res) {
+  var page          = webpage.create()
+  var startTime = new Date().getTime()
+  var bytesConsumed = 0
+
+  if (req.method != "GET") {
+    return send(405, toHTML("Method not accepted."))
+  }
+
+  var url = parse(req.url)
+
+  var query = url.query
+  if (req.url == "<%= phantom_process_check_url %>"){
+    var host = "http://<%= phantom_process_check_host %>"
+  }
+  else{
+    var host = "http://" + req.headers['X-Backend-Host']
+  }
+  var href = decodeURIComponent(host + req.url)
+
+  if (!href) {
+    return send(400, toHTML("`href` parameter is missing."))
+  }
+
+  var maxTime    = Number(query.max_time)  || config.maxTime
+  var maxBytes   = Number(query.max_bytes) || config.maxBytes
+  var readyEvent = query.ready_event       || config.readyEvent
+  var loadImages = "load_images" in query  || config.loadImages
+
+  page.settings.loadImages = loadImages
+
+  page.onInitialized = function() {
+    page.evaluate(onInit, readyEvent)
+
+    function onInit(readyEvent) {
+      window.rndrme = true;
+      window.addEventListener(readyEvent, function() {
+        setTimeout(window.callPhantom, 0)
+      })
+    }
+  }
+
+  page.onCallback = function() {
+    send(200, page.content)
+  }
+
+  var timeout = setTimeout(page.onCallback, maxTime)
+
+  page.customHeaders = { 'X-Phantom': 'true' }
+  logger.debug("Got request " + req.url)
+  logger.debug("Got request  " + JSON.stringify(req));
+  logger.debug("Sending request  " + JSON.stringify(page));
+  logger.debug("Sending request to " + href)
+  page.open(href)
+
+  function send(statusCode, data) {
+    clearTimeout(timeout)
+
+    res.statusCode = statusCode
+
+    res.setHeader("Content-Type", "text/html")
+    res.setHeader("Content-Length", byteLength(data))
+    res.setHeader("X-Rndrme-Bytes-Consumed", bytesConsumed.toString())
+
+    res.write(data)
+    res.close()
+
+    var endTime = new Date().getTime()
+    var interval = endTime - startTime;
+    logger.info(href + " " + statusCode + " " + interval + "ms" + " " + byteLength(data) + "bytes")
+    page.close()
+  }
+}
+
+function byteLength(str) {
+  return encodeURIComponent(str).match(/%..|./g).length
+}
+
+function toHTML(message) {
+  return "<!DOCTYPE html><body>" + message + "</body>\n"
+}
+
+function parse(url) {
+  var anchor = document.createElement("a")
+
+  anchor.href = url
+  anchor.query = {}
+
+  anchor.search.slice(1).split("&").forEach(function(pair) {
+    pair = pair.split("=").map(decodeURIComponent)
+    anchor.query[pair[0]] = pair[1]
+  })
+
+  return anchor
+}
+
+
+
