@@ -19,7 +19,7 @@ the major pains:
 3. Mobile Performance - Some older devices are having difficulties executing
    the JS involved in single-page applications.
 
-## How phantom_server Resolves These Issues?
+## How phantom_server resolves these issues?
 
 By rendering full HTML pages:
 
@@ -30,7 +30,7 @@ By rendering full HTML pages:
    go through the hassle of rendering them themselves thus reducing the
    performance issues with single-page applications.
 
-## How It Works?
+## How it works?
 
 1. Your server gets a request to /url
 2. Your server requests phantom_server to render /url
@@ -64,7 +64,7 @@ To get started, you will need an EC2 instance with the following:
 
 That's it - You're supposed to have phantom server started!
 
-## Client Side
+## Client side
 
 phantom_server is intended to work with [phantom_renderer](https://github.com/FTBpro/phantom_renderer)
 which runs on your server and performs the communication with the phantom server.
