@@ -42,9 +42,8 @@ By rendering full HTML pages:
 ## Pre-Requisites
 
 phantom_server is currently configured to work on AWS EC2.
-This is the list of things needed to get it going:
 
-An EC2 instance with the following:
+To get started, you will need an EC2 instance with the following:
   * tags:
 
   | Tag Name      | Tag Value   
