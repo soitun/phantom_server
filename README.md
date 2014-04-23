@@ -32,6 +32,15 @@ By rendering full HTML pages:
 
 ## How it works?
 
+This is how it looks like:
+![phantom_server architecture](http://s30.postimg.org/tak0r6czl/Phantom_Server_Architecture.png)
+
+phantom_server has a poll of phantomjs processes managed by [phantom-manager](https://github.com/FTBpro/phantom-manager)
+Each process runs a modified version of [rndr.me](https://github.com/jed/rndr.me)
+These processes are load-balanced by an [Nginx](http://nginx.com/) HTTP server
+
+The basic flow of page rendering is:
+
 1. Your server gets a request to /url
 2. Your server requests phantom_server to render /url
 3. phantom_server requests the single-page version of /url from your server
